@@ -29,11 +29,14 @@ class ConfigActions
 {
     private static void setDefaultConfig()
     {
+        // Устанавливаем дефолтный конфиг
         string oldConfigName = "config.json";
         string newConfigName = $"config_{DateTime.Now.ToString("yyyyMMddHHmmss")}.json";
 
+        // Переименовываем старый невалидный конфиг
         File.Move(oldConfigName, newConfigName);
 
+        // Содержимое дефолтного конфига
         string jsonString = @"{
             ""actions"": [
                 {
@@ -108,6 +111,7 @@ class ConfigActions
             ]
         }";
 
+        // Записываем содержимое дефолтного конфига в новый конфиг
         File.WriteAllText(oldConfigName, jsonString);
     }
 
@@ -115,6 +119,7 @@ class ConfigActions
     {
         try
         {
+            // пробуем спарсить конфиг по пути
             string configPath = path;
             if (!File.Exists(configPath))
             {
@@ -124,24 +129,28 @@ class ConfigActions
 
             string configContent = File.ReadAllText(configPath);
 
+            // десериализуем json (конфиг хранится в формате json)
             ActionList json = JsonSerializer.Deserialize<ActionList>(configContent);
 
             List<Action> actionList = new List<Action>();
 
+            // проходимся по массиву, хранящемуся по ключу actions, добавляем действия в массив action
             foreach (var action in json.actions)
             {
                 actionList.Add(action);
                 if (action.effects == null || action.name == null)
                 {
                     throw new Exception();
-                } 
+                }
             }
 
+            // Вызываем метод, который установит этот массив actions для него в локальную переменную
             Actions.setActions(actionList);
             return true;
         }
         catch (Exception e)
         {
+            // Устанавливаем дефолтный конфиг, если текущий не загружен
             Console.WriteLine("Некорректный конфиг, установлены значения по умолчанию");
             setDefaultConfig();
             return false;

@@ -16,6 +16,7 @@
 
     public bool setParameter(string parameterKey, int parameterValue)
     {
+        // Тупо валидация по границам, прописанным в лабе
         if ((parameterKey == "здоровье") &&
             parameterValue > 100)
         {
